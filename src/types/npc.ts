@@ -13,6 +13,7 @@ interface Npc {
   race: string;
   gender: Gender;
   statblock: StatBlock;
+  bio?: string;
 }
 
 export type { Gender, StatBlock, Npc }

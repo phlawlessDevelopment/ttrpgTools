@@ -3,6 +3,12 @@
 	import { races } from '../../data';
 	import { d10, d6 } from '../../dice';
 	import type { Gender, Npc, StatBlock } from '../../types/npc';
+
+	interface MissingFields {
+		name: string;
+		bio: string;
+	}
+
 	let count: number;
 	let npcs: Npc[] = [];
 	let nums = [1, 2, 3];
@@ -47,24 +53,27 @@
 		);
 	}
 
-	async function generateMissingFields(npc: Npc) {
+	async function generateMissingFields(npc: Npc): Promise<MissingFields> {
 		const response = await fetch('api/npc', {
 			method: 'POST',
 			body: JSON.stringify(npc)
 		});
-		const data = await response.json();
-		console.log(data);
+		return await response.json();
 	}
 
-	function genNPC() {
+	async function genNPC() {
 		const npc = {
 			id: Math.floor(Math.random() * 10000),
 			name: 'npc_2',
 			race: pickRace(),
 			gender: pickGender(),
-			statblock: genStats()
+			statblock: genStats(),
+			bio: ''
 		};
-		generateMissingFields(npc);
+		const { name, bio } = await generateMissingFields(npc);
+		npc.name = name;
+		npc.bio = bio;
+		npcs = [...npcs, npc];
 	}
 </script>
 

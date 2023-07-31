@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { Npc } from '../routes/npc_list/+page.svelte';
+	import type { Npc } from '../types/npc';
 	export let npc: Npc;
-	const { name, race, gender, statblock } = npc;
+	const { name, race, gender, statblock, bio } = npc;
 	const { strength, dexterity, constitution, intelligence, wisdom, charisma } = statblock;
 </script>
 
@@ -15,7 +15,9 @@
 	<h2 class="h2">
 		{gender}
 	</h2>
-
+	<h3 class="h3">
+		{bio}
+	</h3>
 	<div class="table-container">
 		<table class="table table-hover">
 			<thead>
