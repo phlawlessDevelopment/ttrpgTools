@@ -1,27 +1,8 @@
-<script context="module" lang="ts">
-	type gender = 'male' | 'female';
-	interface StatBlock {
-		strength: number;
-		dexterity: number;
-		constitution: number;
-		intelligence: number;
-		wisdom: number;
-		charisma: number;
-	}
-	export interface Npc {
-		id: number;
-		name: string;
-		race: string;
-		gender: gender;
-		statblock: StatBlock;
-	}
-</script>
-
 <script lang="ts">
 	import NpcCard from '../../components/npcCard.svelte';
 	import { races } from '../../data';
 	import { d10, d6 } from '../../dice';
-
+	import type { Gender, Npc, StatBlock } from '../../types/npc';
 	let count: number;
 	let npcs: Npc[] = [];
 	let nums = [1, 2, 3];
@@ -31,7 +12,7 @@
 
 	function pickGender() {
 		const genders = ['male', 'female'];
-		return genders[Math.floor(Math.random() * genders.length)] as gender;
+		return genders[Math.floor(Math.random() * genders.length)] as Gender;
 	}
 
 	function pickName() {}
@@ -66,25 +47,30 @@
 		);
 	}
 
-	function genNPCs() {
-		const newNPCs = [];
-		const num = count | 1;
-		for (let i = 0; i < num; i++) {
-			newNPCs.push({
-				id: Math.floor(Math.random() * 10000),
-				name: 'npc_2',
-				race: pickRace(),
-				gender: pickGender(),
-				statblock: genStats()
-			});
-		}
-		npcs = [...npcs, ...newNPCs];
+	async function generateMissingFields(npc: Npc) {
+		const response = await fetch('api/npc', {
+			method: 'POST',
+			body: JSON.stringify(npc)
+		});
+		const data = await response.json();
+		console.log(data);
+	}
+
+	function genNPC() {
+		const npc = {
+			id: Math.floor(Math.random() * 10000),
+			name: 'npc_2',
+			race: pickRace(),
+			gender: pickGender(),
+			statblock: genStats()
+		};
+		generateMissingFields(npc);
 	}
 </script>
 
 <div class="flex gap-4 mb-4">
 	<input class="input" type="number" placeholder="count" bind:value={count} />
-	<button type="button" class="btn variant-filled-warning" on:click={genNPCs}>Generate </button>
+	<button type="button" class="btn variant-filled-warning" on:click={genNPC}>Generate </button>
 </div>
 <div class="grid grid-cols-3 gap-2">
 	{#each npcs as npc (npc.id)}
